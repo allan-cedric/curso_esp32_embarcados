@@ -1,0 +1,57 @@
+menu "DAC Example Configuration"
+
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    choice DAC_WAVE
+        prompt "DAC Wave type"
+        default DAC_WAVE_ONESHOT
+        help
+            Select a DAC Wave type: Oneshot, Cosine or Saw.
+
+        config DAC_WAVE_ONESHOT
+            bool "ONESHOT"
+        config DAC_WAVE_COS
+            bool "COS"
+    endchoice
+
+    choice DAC_WAVE_ONESHOT_TYPE
+        depends on DAC_WAVE_ONESHOT
+        prompt "DAC Wave Oneshot type"
+        default DAC_WAVE_TRIANGULAR
+        help
+            Select a DAC Oneshot Wave type: Triangular or Saw.
+
+        config DAC_WAVE_TRIANGULAR
+            bool "TRIANGULAR"
+        config DAC_WAVE_SAW
+            bool "SAW"
+    endchoice
+
+    choice DAC_CHANNEL
+        prompt "DAC Channel"
+        default DAC_CHANNEL_0
+        help
+            Select a DAC Oneshot Wave type: Triangular or Saw.
+
+        config DAC_CHANNEL_0
+            bool "0"
+        config DAC_CHANNEL_1
+            bool "1"
+    endchoice
+
+    config DAC_WAVE_COS_FREQ_HZ
+        depends on DAC_WAVE_COS
+        int "DAC Wave Cosine Frequency (Hz)"
+        range 0 2000
+        default 1000
+        help
+            DAC Wave Cosine Frequency (Hz)
+
+    config DAC_WAVE_COS_OFFSET
+        depends on DAC_WAVE_COS
+        int "DAC Wave Cosine Offset"
+        range 0 127
+        default 0
+        help
+            DAC Wave Cosine Offset
+endmenu
