@@ -43,59 +43,59 @@ void app_main(void)
 {
     ESP_LOGI(TAG1, "Iniciando o programa");
 
-    xTaskCreate(
-        vTaskBlink, // funcao da task
-        "TaskBlink1",
-        2048,
-        (void *)&led1,
-        1,
-        &xTaskBlink1Handle
-    );
-    // xTaskCreatePinnedToCore(
+    // xTaskCreate(
     //     vTaskBlink, // funcao da task
     //     "TaskBlink1",
     //     2048,
     //     (void *)&led1,
     //     1,
-    //     &xTaskBlink1Handle,
-    //     0
+    //     &xTaskBlink1Handle
     // );
-
-    xTaskCreate(
+    xTaskCreatePinnedToCore(
         vTaskBlink, // funcao da task
-        "TaskBlink2",
+        "TaskBlink1",
         2048,
-        (void *)&led2,
+        (void *)&led1,
         1,
-        &xTaskBlink2Handle
+        &xTaskBlink1Handle,
+        0
     );
-    // xTaskCreatePinnedToCore(
+
+    // xTaskCreate(
     //     vTaskBlink, // funcao da task
     //     "TaskBlink2",
     //     2048,
     //     (void *)&led2,
     //     1,
-    //     &xTaskBlink2Handle,
-    //     0
+    //     &xTaskBlink2Handle
     // );
-
-    xTaskCreate(
-        vTaskCounter, // funcao da task
-        "TaskCounter",
-        1700,
-        (void *)valor,
-        2,
-        &xTaskCounterHandle
+    xTaskCreatePinnedToCore(
+        vTaskBlink, // funcao da task
+        "TaskBlink2",
+        2048,
+        (void *)&led2,
+        1,
+        &xTaskBlink2Handle,
+        0
     );
-    // xTaskCreatePinnedToCore(
+
+    // xTaskCreate(
     //     vTaskCounter, // funcao da task
     //     "TaskCounter",
     //     1700,
     //     (void *)valor,
     //     2,
-    //     &xTaskCounterHandle,
-    //     1
+    //     &xTaskCounterHandle
     // );
+    xTaskCreatePinnedToCore(
+        vTaskCounter, // funcao da task
+        "TaskCounter",
+        2048,         // precisa ser 2048
+        (void *)valor,
+        2,
+        &xTaskCounterHandle,
+        1
+    );
 
     ESP_LOGD(TAG1, "Iniciando a [%s]. CORE[%d]", pcTaskGetName(NULL), xPortGetCoreID());
     // int i = 0;
