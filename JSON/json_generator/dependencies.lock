@@ -1,0 +1,18 @@
+dependencies:
+  espressif/json_generator:
+    component_hash: 6538d6acb33976977224343105498c06bcee459f932450a827176f992cdd24e8
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.2.0
+  idf:
+    source:
+      type: idf
+    version: 5.5.1
+direct_dependencies:
+- espressif/json_generator
+- idf
+manifest_hash: 2396c144a890d1191c992113c2ed775962c11d010a95949ec06228604fed8b03
+target: esp32s2
+version: 2.0.0
