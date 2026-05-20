@@ -16,7 +16,11 @@
 
 #define TAG "ESP-NOW Sender"
 
-uint8_t receiver_mac[6] = {0x68, 0x67, 0x25, 0x2e, 0x55, 0xce};
+// ESP32-S2
+// uint8_t receiver_mac[6] = {0x68, 0x67, 0x25, 0x2e, 0x55, 0xce};
+
+// generic ESP32
+uint8_t receiver_mac[6] = {0x30, 0xae, 0xa4, 0x75, 0x45, 0xe8};
 
 // void espnow_send_cb(const uint8_t *mac_addr, esp_now_send_status_t status)
 void espnow_send_cb(const wifi_tx_info_t *wsend_data, esp_now_send_status_t status)
