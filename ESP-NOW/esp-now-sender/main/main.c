@@ -39,6 +39,12 @@ void espnow_send_cb(const wifi_tx_info_t *wsend_data, esp_now_send_status_t stat
     }
 }
 
+void espnow_recv_cb(const esp_now_recv_info_t *esp_now_info, const uint8_t *data, int data_len)
+{
+    ESP_LOGI(TAG, "got message from " MACSTR, MAC2STR(esp_now_info->src_addr));
+    printf("message: %.*s\n", data_len, data);
+}
+
 void app_main(void)
 {
     esp_err_t ret = nvs_flash_init();
@@ -60,6 +66,7 @@ void app_main(void)
     // init ESP-NOW
     ESP_ERROR_CHECK(esp_now_init());
     ESP_ERROR_CHECK(esp_now_register_send_cb(espnow_send_cb));
+    ESP_ERROR_CHECK(esp_now_register_recv_cb(espnow_recv_cb));
 
     // add peer
     esp_now_peer_info_t peer;
