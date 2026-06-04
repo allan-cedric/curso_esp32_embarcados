@@ -3,4 +3,4 @@
 cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(light-sleep-timer-wake-up)
+project(light-sleep-uart-wake-up)
