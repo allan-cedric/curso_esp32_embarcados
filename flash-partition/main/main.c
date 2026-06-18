@@ -88,7 +88,8 @@ void app_main(void)
 
     ESP_LOGI(TAG, "Find second FAT partition by specifying the label");
     // In case of multiple matches, `esp_partition_find_first` returns the first match.
-    find_partition(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_FAT, "storage2");
+    // find_partition(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_FAT, "storage2");
+    find_partition(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_FAT, "sda2");
 
     /* Second Part - Iterating over partitions */
 
