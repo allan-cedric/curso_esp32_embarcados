@@ -18,6 +18,15 @@ const char *TAG = "NVS Test";
 
 uint8_t setpoint;
 
+typedef struct
+{
+    float kp;
+    float ki;
+    float kd;
+} pid_controller_t;
+
+char ssid[32];
+
 void app_main(void)
 {
     ESP_LOGI(TAG, "\n\nInitializing NVS...");
@@ -58,6 +67,7 @@ void app_main(void)
 
                 err = nvs_commit(nvs_handle);
                 ESP_LOGI(TAG, "%s", (err != ESP_OK) ? "Failed!" : "Done");
+                break;
             
             default:
                 ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(err));
@@ -66,6 +76,87 @@ void app_main(void)
     }
 
     nvs_close(nvs_handle);
+
+    pid_controller_t pid;
+
+    err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Error (%s) opening NVS handle!", esp_err_to_name(err));
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Reading PID values from NVS...");
+        size_t required_size = sizeof(pid);
+        err = nvs_get_blob(nvs_handle, "pid", &pid, &required_size);
+
+        switch (err)
+        {
+            case ESP_OK:
+                ESP_LOGI(TAG, "Done");
+                ESP_LOGI(TAG, "PID values: Kp = %f, Ki = %f, Kd = %f", pid.kp, pid.ki, pid.kd);
+                break;
+
+            case ESP_ERR_NVS_NOT_FOUND:
+                ESP_LOGE(TAG, "The value is not initialized yet!");
+                ESP_LOGI(TAG, "Initializing PID values");
+
+                pid.kp = 1.0;
+                pid.ki = 0.8;
+                pid.kd = 0.2;
+                ESP_LOGI(TAG, "Writing PID values to NVS...");
+                err = nvs_set_blob(nvs_handle, "pid", &pid, sizeof(pid));
+                ESP_LOGI(TAG, "%s", (err != ESP_OK) ? "Failed!" : "Done");
+                err = nvs_commit(nvs_handle);
+                ESP_LOGI(TAG, "%s", (err != ESP_OK) ? "Failed!" : "Done");
+                break;
+            
+            default:
+                ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(err));
+                break;
+        }
+
+        nvs_close(nvs_handle);
+    }
+
+    err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Error (%s) opening NVS handle!", esp_err_to_name(err));
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Reading SSID from NVS...");
+        size_t required_size = sizeof(ssid);
+        err = nvs_get_str(nvs_handle, "ssid", ssid, &required_size);
+
+        switch (err)
+        {
+            case ESP_OK:
+                ESP_LOGI(TAG, "Done");
+                ESP_LOGI(TAG, "SSID = %s", ssid);
+                break;
+
+            case ESP_ERR_NVS_NOT_FOUND:
+                ESP_LOGE(TAG, "The value is not initialized yet!");
+                ESP_LOGI(TAG, "Initializing SSID");
+
+                strncpy(ssid, "MySSID", required_size);
+
+                ESP_LOGI(TAG, "Writing SSID to NVS...");
+                err = nvs_set_str(nvs_handle, "ssid", ssid);
+                ESP_LOGI(TAG, "%s", (err != ESP_OK) ? "Failed!" : "Done");
+                err = nvs_commit(nvs_handle);
+                ESP_LOGI(TAG, "%s", (err != ESP_OK) ? "Failed!" : "Done");
+                break;
+            
+            default:
+                ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(err));
+                break;
+        }
+
+        nvs_close(nvs_handle);
+    }
 
     while(1)
     {
