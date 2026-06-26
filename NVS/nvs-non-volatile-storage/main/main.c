@@ -26,9 +26,12 @@ typedef struct
 } pid_controller_t;
 
 char ssid[32];
+char password[32];
 
 void app_main(void)
 {
+    /* NVS initialization */
+
     ESP_LOGI(TAG, "\n\nInitializing NVS...");
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -37,6 +40,8 @@ void app_main(void)
         err = nvs_flash_init();
     }
     ESP_ERROR_CHECK(err);
+
+    /* Store 'setpoint' */
 
     nvs_handle_t nvs_handle;
     err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
@@ -76,6 +81,8 @@ void app_main(void)
     }
 
     nvs_close(nvs_handle);
+
+    /* Store 'PID' constants */
 
     pid_controller_t pid;
 
@@ -119,6 +126,8 @@ void app_main(void)
         nvs_close(nvs_handle);
     }
 
+    /* Store 'SSID' */
+
     err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
     if (err != ESP_OK)
     {
@@ -157,6 +166,49 @@ void app_main(void)
 
         nvs_close(nvs_handle);
     }
+
+    /* Store 'password' */
+
+    err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Error (%s) opening NVS handle!", esp_err_to_name(err));
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Reading password from NVS...");
+        size_t required_size = sizeof(password);
+        err = nvs_get_str(nvs_handle, "password", password, &required_size);
+
+        switch (err)
+        {
+            case ESP_OK:
+                ESP_LOGI(TAG, "Done");
+                ESP_LOGI(TAG, "Password = %s", password);
+                break;
+
+            case ESP_ERR_NVS_NOT_FOUND:
+                ESP_LOGE(TAG, "The value is not initialized yet!");
+                ESP_LOGI(TAG, "Initializing password");
+
+                strncpy(password, "MyPassword", required_size);
+
+                ESP_LOGI(TAG, "Writing password to NVS...");
+                err = nvs_set_str(nvs_handle, "password", password);
+                ESP_LOGI(TAG, "%s", (err != ESP_OK) ? "Failed!" : "Done");
+                err = nvs_commit(nvs_handle);
+                ESP_LOGI(TAG, "%s", (err != ESP_OK) ? "Failed!" : "Done");
+                break;
+            
+            default:
+                ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(err));
+                break;
+        }
+
+        nvs_close(nvs_handle);
+    }
+
+    /* Update 'setpoint' value */
 
     while(1)
     {
