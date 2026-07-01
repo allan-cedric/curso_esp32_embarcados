@@ -40,6 +40,7 @@ void app_main(void)
         {
             ESP_LOGE(TAG, "Failed to initialize SPIFFS (%s)", esp_err_to_name(ret));
         }
+        return;
     }
 
     /* Get information about SPIFFS partition */
@@ -57,4 +58,78 @@ void app_main(void)
     {
         ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
     }
+
+    if (used > total)
+    {
+        ESP_LOGW(TAG, "Number of used bytes cannot be larger than total. Performing spiffs_check().");
+        ret = esp_spiffs_check(conf.partition_label);
+        if (ret != ESP_OK)
+        {
+            ESP_LOGE(TAG, "spiffs_check() failed (%s)", esp_err_to_name(ret));
+            return;
+        }
+        else
+        {
+            ESP_LOGI(TAG, "spiffs_check() successful");
+        }
+    }
+
+    /* POSIX File API */
+
+    ESP_LOGI(TAG, "Opening file");
+    FILE *f = fopen("/spiffs/hello.txt", "w");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open file for writing");
+        return;
+    }
+    fprintf(f, "Hello World from SPIFFS\n");
+    fclose(f);
+    ESP_LOGI(TAG, "File written");
+
+    struct stat st;
+    if (stat("/spiffs/foo.txt", &st) == 0)
+    {
+        unlink("/spiffs/foo.txt");
+    }
+
+    ESP_LOGI(TAG, "Renaming file");
+    if (rename("/spiffs/hello.txt", "/spiffs/foo.txt") != 0)
+    {
+        ESP_LOGE(TAG, "Rename failed");
+        return;
+    }
+
+    f = fopen("/spiffs/foo.txt", "r");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open file for reading");
+        return;
+    }
+    char line[128];
+    while (fgets(line, sizeof(line), f) != NULL)
+    {
+        printf("%s", line);
+    }
+    printf("\n");
+    fclose(f);
+
+    f = fopen("/spiffs/example.txt", "r");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open file for reading");
+        return;
+    }
+    while (fgets(line, sizeof(line), f) != NULL)
+    {
+        printf("%s", line);
+    }
+    printf("\n");
+    fclose(f);
+
+    /* Unmounting SPIFFS partition */
+
+    ESP_LOGI(TAG, "Unmounting");
+    esp_vfs_spiffs_unregister(conf.partition_label);
+    ESP_LOGI(TAG, "SPIFFS Unmounted");
 }
