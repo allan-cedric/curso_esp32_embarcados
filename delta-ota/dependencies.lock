@@ -1,0 +1,27 @@
+dependencies:
+  espressif/esp_delta_ota:
+    component_hash: 147161b602ef51e9f6649eb6d90c4d4ac3c94228cb264fa0e68be7877180462d
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=4.3'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.1.4
+  idf:
+    source:
+      type: idf
+    version: 5.5.1
+  protocol_examples_common:
+    dependencies: []
+    source:
+      path: /home/allan/esp/v5.5.1/esp-idf/examples/common_components/protocol_examples_common
+      type: local
+    version: '*'
+direct_dependencies:
+- espressif/esp_delta_ota
+- protocol_examples_common
+manifest_hash: 6f857ea3f2e0ecc9731a9a64070f6f4495bb51b817fded072c20c0908ad38f5b
+target: esp32s2
+version: 2.0.0
